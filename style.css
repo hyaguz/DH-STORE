@@ -246,6 +246,65 @@ header {
     color: #000;
 }
 
+/* ========== OPÇÃO DE ENTREGA/RETIRADA ========== */
+.opcao-entrega {
+    margin: 1.5rem 0;
+}
+
+.opcao-entrega h4 {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.entrega-opcoes {
+    display: flex;
+    gap: 1rem;
+}
+
+.entrega-btn {
+    flex: 1;
+    padding: 1rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #999;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.entrega-btn i {
+    font-size: 1.5rem;
+}
+
+.entrega-btn:hover {
+    border-color: #fff;
+    color: #fff;
+}
+
+.entrega-btn.selecionado {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.entrega-info {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 0.8rem;
+    text-align: center;
+    font-weight: 300;
+}
+
 .preco-container {
     margin: 2rem 0;
     padding: 2rem 0;
@@ -425,8 +484,8 @@ header {
     }
     
     .logo-imagem {
-    width: 150px;
-}
+        width: 150px;
+    }
     
     .preco-atual {
         font-size: 2rem;
