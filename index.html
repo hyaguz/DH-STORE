@@ -9,43 +9,43 @@
 </head>
 <body>
     <header>
-    <div class="logo">
-        <img src="imagens/logo.png" alt="DH STORE" class="logo-imagem">
-    </div>
-</header>
+        <div class="logo">
+            <img src="imagens/logo.png" alt="DH STORE" class="logo-imagem">
+        </div>
+    </header>
 
     <main class="container">
         <div class="produtos-grid">
             <!-- Produto 1 - Camisa Amarela -->
-<div class="produto-card" data-produto="produto1" onclick="mostrarDetalhes('produto1')">
-    <div class="produto-imagem">
-        <img src="imagens/camisa-amarela.jpg" alt="Camisa Brasil 2026 Amarela" class="vitrine-imagem" style="transition: opacity 0.5s ease;">
-    </div>
-    <div class="produto-info">
-        <h3>Brasil 2026 - Amarela</h3>
-        <div class="preco-container-card">
-            <span class="preco-antigo-card">R$ 120,00</span>
-            <span class="preco">R$ 89,99</span>
-        </div>
-        <button class="btn-ver-mais">Ver Detalhes</button>
-    </div>
-</div>
+            <div class="produto-card" data-produto="produto1" onclick="mostrarDetalhes('produto1')">
+                <div class="produto-imagem">
+                    <img src="imagens/camisa-amarela.jpg" alt="Camisa Brasil 2026 Amarela" class="vitrine-imagem" style="transition: opacity 0.5s ease;">
+                </div>
+                <div class="produto-info">
+                    <h3>Brasil 2026 - Amarela</h3>
+                    <div class="preco-container-card">
+                        <span class="preco-antigo-card">R$ 120,00</span>
+                        <span class="preco">R$ 89,99</span>
+                    </div>
+                    <button class="btn-ver-mais">Ver Detalhes</button>
+                </div>
+            </div>
 
-<!-- Produto 2 - Camisa Azul -->
-<div class="produto-card" data-produto="produto2" onclick="mostrarDetalhes('produto2')">
-    <div class="produto-imagem">
-        <img src="imagens/camisa-azul.jpg" alt="Camisa Brasil 2026 Azul" class="vitrine-imagem" style="transition: opacity 0.5s ease;">
-    </div>
-    <div class="produto-info">
-        <h3>Brasil 2026 - Azul</h3>
-        <div class="preco-container-card">
-            <span class="preco-antigo-card">R$ 120,00</span>
-            <span class="preco">R$ 89,99</span>
+            <!-- Produto 2 - Camisa Azul -->
+            <div class="produto-card" data-produto="produto2" onclick="mostrarDetalhes('produto2')">
+                <div class="produto-imagem">
+                    <img src="imagens/camisa-azul.jpg" alt="Camisa Brasil 2026 Azul" class="vitrine-imagem" style="transition: opacity 0.5s ease;">
+                </div>
+                <div class="produto-info">
+                    <h3>Brasil 2026 - Azul</h3>
+                    <div class="preco-container-card">
+                        <span class="preco-antigo-card">R$ 120,00</span>
+                        <span class="preco">R$ 89,99</span>
+                    </div>
+                    <button class="btn-ver-mais">Ver Detalhes</button>
+                </div>
+            </div>
         </div>
-        <button class="btn-ver-mais">Ver Detalhes</button>
-    </div>
-</div>
-
     </main>
 
     <!-- Modal de Detalhes do Produto -->
@@ -55,14 +55,10 @@
             
             <div class="modal-header">
                 <div class="carrossel-container">
-                    <div class="carrossel-imagens" id="carrossel-imagens">
-                        <!-- As imagens serão inseridas pelo JavaScript -->
-                    </div>
+                    <div class="carrossel-imagens" id="carrossel-imagens"></div>
                     <button class="carrossel-btn carrossel-anterior" onclick="mudarImagem(-1)">&#10094;</button>
                     <button class="carrossel-btn carrossel-proximo" onclick="mudarImagem(1)">&#10095;</button>
-                    <div class="carrossel-indicadores" id="carrossel-indicadores">
-                        <!-- Os indicadores serão inseridos pelo JavaScript -->
-                    </div>
+                    <div class="carrossel-indicadores" id="carrossel-indicadores"></div>
                 </div>
             </div>
             
@@ -72,9 +68,23 @@
                 
                 <div class="tamanhos">
                     <h4>Tamanhos Disponíveis:</h4>
-                    <div class="tamanhos-grid">
-                        <!-- Os tamanhos serão inseridos pelo JavaScript -->
+                    <div class="tamanhos-grid"></div>
+                </div>
+                
+                <!-- OPÇÃO DE ENTREGA/RETIRADA -->
+                <div class="opcao-entrega">
+                    <h4>Forma de Recebimento:</h4>
+                    <div class="entrega-opcoes">
+                        <button class="entrega-btn selecionado" onclick="selecionarEntrega('entrega', this)">
+                            <i class="fas fa-truck"></i>
+                            <span>Entrega</span>
+                        </button>
+                        <button class="entrega-btn" onclick="selecionarEntrega('retirada', this)">
+                            <i class="fas fa-store"></i>
+                            <span>Retirada</span>
+                        </button>
                     </div>
+                    <p class="entrega-info" id="entrega-info">🚚 Enviamos para todo Brasil • Frete calculado no WhatsApp</p>
                 </div>
                 
                 <div class="preco-container">
