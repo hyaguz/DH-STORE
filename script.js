@@ -26,337 +26,170 @@ const produtos = {
     }
 };
 
-// Variáveis do carrossel do modal
+// Variáveis
 let imagemAtual = 0;
 let imagensProduto = [];
 let intervaloAutomatico;
 let touchStartX = 0;
 let touchEndX = 0;
-
-// Variáveis dos carrosséis da vitrine
 let intervalosVitrine = {};
 let imagensAtuaisVitrine = {};
-
-// Número do WhatsApp
+let tipoEntrega = 'entrega';
+let tamanhoSelecionado = '';
 const NUMERO_WHATSAPP = "5598981865930";
 
-// ========== CARROSSEL DA VITRINE (PÁGINA INICIAL) ==========
-
+// ========== CARROSSEL VITRINE ==========
 function iniciarCarrosselVitrine(produtoId) {
     const produto = produtos[produtoId];
     const card = document.querySelector(`[data-produto="${produtoId}"]`);
     if (!card) return;
-    
     const img = card.querySelector('.vitrine-imagem');
     if (!img) return;
-    
     imagensAtuaisVitrine[produtoId] = 0;
-    
-    // Limpar intervalo anterior se existir
-    if (intervalosVitrine[produtoId]) {
-        clearInterval(intervalosVitrine[produtoId]);
-    }
-    
-    // Pré-carregar todas as imagens para transição fluida
-    produto.imagens.forEach(src => {
-        const preload = new Image();
-        preload.src = src;
-    });
-    
-    // Trocar imagem com efeito fade suave
+    if (intervalosVitrine[produtoId]) clearInterval(intervalosVitrine[produtoId]);
+    produto.imagens.forEach(src => { const p = new Image(); p.src = src; });
     intervalosVitrine[produtoId] = setInterval(() => {
-        // Fade out lento
-        img.style.opacity = '0';
-        img.style.transform = 'scale(1.03)';
-        
+        img.style.opacity = '0'; img.style.transform = 'scale(1.03)';
         setTimeout(() => {
-            // Trocar para próxima imagem
             imagensAtuaisVitrine[produtoId]++;
-            if (imagensAtuaisVitrine[produtoId] >= produto.imagens.length) {
-                imagensAtuaisVitrine[produtoId] = 0;
-            }
+            if (imagensAtuaisVitrine[produtoId] >= produto.imagens.length) imagensAtuaisVitrine[produtoId] = 0;
             img.src = produto.imagens[imagensAtuaisVitrine[produtoId]];
-            
-            // Fade in suave
-            img.style.opacity = '1';
-            img.style.transform = 'scale(1)';
+            img.style.opacity = '1'; img.style.transform = 'scale(1)';
         }, 500);
     }, 4000);
 }
 
-// Iniciar carrosséis da vitrine quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     iniciarCarrosselVitrine('produto1');
     iniciarCarrosselVitrine('produto2');
+    // Forçar indicadores
+    const style = document.createElement('style');
+    style.textContent = `.carrossel-indicadores{display:flex!important;visibility:visible!important;opacity:1!important;z-index:9999!important;pointer-events:auto!important;position:absolute!important;bottom:15px!important;left:50%!important;transform:translateX(-50%)!important;background:rgba(0,0,0,0.5)!important;padding:5px 10px!important;border-radius:20px!important;}.indicador{display:inline-block!important;width:12px!important;height:12px!important;min-width:12px!important;min-height:12px!important;border-radius:50%!important;background:rgba(255,255,255,0.5)!important;border:2px solid rgba(255,255,255,0.8)!important;cursor:pointer!important;padding:0!important;margin:0!important;opacity:1!important;visibility:visible!important;-webkit-appearance:none!important;}.indicador.ativo{background:#fff!important;border-color:#fff!important;transform:scale(1.4)!important;box-shadow:0 0 10px rgba(255,255,255,0.8)!important;}`;
+    document.head.appendChild(style);
 });
 
-// ========== MODAL E CARROSSEL PRINCIPAL ==========
-
-// Função para mostrar detalhes do produto
+// ========== MODAL ==========
 function mostrarDetalhes(produtoId) {
     const produto = produtos[produtoId];
     const modal = document.getElementById('modal');
+    if (!produto) return;
     
-    if (produto) {
-        document.getElementById('modal-titulo').textContent = produto.nome;
-        document.getElementById('modal-descricao').textContent = produto.descricao;
-        document.getElementById('modal-preco').textContent = produto.preco;
-        document.getElementById('modal-preco-antigo').textContent = produto.precoAntigo;
-        
-        // Configurar carrossel do modal
-        imagensProduto = produto.imagens;
-        imagemAtual = 0;
-        carregarCarrossel();
-        iniciarTrocaAutomatica();
-        
-        // Configurar touch para arraste
-        configurarTouch();
-        
-        // Gerar tamanhos
-        const tamanhosGrid = document.querySelector('.tamanhos-grid');
-        tamanhosGrid.innerHTML = '';
-        
-        produto.tamanhos.forEach(tamanho => {
-            const btn = document.createElement('button');
-            btn.className = 'tamanho-btn';
-            btn.textContent = tamanho;
-            btn.onclick = (e) => selecionarTamanho(e, produto);
-            tamanhosGrid.appendChild(btn);
-        });
-        
-        // Configurar link do WhatsApp
-        configurarWhatsAppLink(produto);
-        
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
+    document.getElementById('modal-titulo').textContent = produto.nome;
+    document.getElementById('modal-descricao').textContent = produto.descricao;
+    document.getElementById('modal-preco').textContent = produto.preco;
+    document.getElementById('modal-preco-antigo').textContent = produto.precoAntigo;
+    
+    imagensProduto = produto.imagens;
+    imagemAtual = 0;
+    tipoEntrega = 'entrega';
+    tamanhoSelecionado = '';
+    
+    // Reset entrega
+    document.querySelectorAll('.entrega-btn').forEach(b => b.classList.remove('selecionado'));
+    const btnE = document.querySelector('.entrega-btn');
+    if (btnE) btnE.classList.add('selecionado');
+    const info = document.getElementById('entrega-info');
+    if (info) info.innerHTML = '🚚 Enviamos para todo Brasil • Frete calculado no WhatsApp';
+    
+    carregarCarrossel();
+    iniciarTrocaAutomatica();
+    configurarTouch();
+    
+    const tg = document.querySelector('.tamanhos-grid');
+    tg.innerHTML = '';
+    produto.tamanhos.forEach(t => {
+        const b = document.createElement('button');
+        b.className = 'tamanho-btn'; b.textContent = t;
+        b.onclick = (e) => selecionarTamanho(e, produto);
+        tg.appendChild(b);
+    });
+    
+    atualizarWhatsApp(produto);
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
-// Carregar imagens no carrossel do modal
 function carregarCarrossel() {
-    const containerImagens = document.getElementById('carrossel-imagens');
-    const containerIndicadores = document.getElementById('carrossel-indicadores');
-    
-    containerImagens.innerHTML = '';
-    containerIndicadores.innerHTML = '';
-    
-    imagensProduto.forEach((imagem, index) => {
-        // Criar imagem
-        const img = document.createElement('img');
-        img.src = imagem;
-        img.alt = 'Foto do produto ' + (index + 1);
-        img.style.transition = 'opacity 0.5s ease-in-out';
-        containerImagens.appendChild(img);
-        
-        // Criar indicador
-        const indicador = document.createElement('button');
-        indicador.className = 'indicador';
-        if (index === 0) indicador.classList.add('ativo');
-        indicador.onclick = () => irParaImagem(index);
-        containerIndicadores.appendChild(indicador);
+    const ci = document.getElementById('carrossel-imagens');
+    const co = document.getElementById('carrossel-indicadores');
+    ci.innerHTML = ''; co.innerHTML = '';
+    imagensProduto.forEach((img, i) => {
+        const im = document.createElement('img');
+        im.src = img; im.alt = 'Foto ' + (i+1);
+        im.style.transition = 'opacity 0.5s ease-in-out';
+        ci.appendChild(im);
+        const ind = document.createElement('button');
+        ind.className = 'indicador';
+        if (i === 0) ind.classList.add('ativo');
+        ind.onclick = () => irParaImagem(i);
+        co.appendChild(ind);
     });
-    
     atualizarPosicaoCarrossel();
 }
 
-// Atualizar posição do carrossel
 function atualizarPosicaoCarrossel() {
-    const containerImagens = document.getElementById('carrossel-imagens');
-    containerImagens.style.transition = 'transform 0.6s ease-in-out';
-    containerImagens.style.transform = `translateX(-${imagemAtual * 100}%)`;
-    
-    // Atualizar indicadores
-    document.querySelectorAll('.indicador').forEach((ind, index) => {
-        ind.classList.toggle('ativo', index === imagemAtual);
-    });
+    document.getElementById('carrossel-imagens').style.transform = `translateX(-${imagemAtual * 100}%)`;
+    document.querySelectorAll('.indicador').forEach((ind, i) => ind.classList.toggle('ativo', i === imagemAtual));
 }
 
-// Mudar imagem
-function mudarImagem(direcao) {
+function mudarImagem(d) {
     pararTrocaAutomatica();
-    imagemAtual += direcao;
-    
-    if (imagemAtual >= imagensProduto.length) {
-        imagemAtual = 0;
-    }
-    if (imagemAtual < 0) {
-        imagemAtual = imagensProduto.length - 1;
-    }
-    
+    imagemAtual += d;
+    if (imagemAtual >= imagensProduto.length) imagemAtual = 0;
+    if (imagemAtual < 0) imagemAtual = imagensProduto.length - 1;
     atualizarPosicaoCarrossel();
     iniciarTrocaAutomatica();
 }
 
-// Ir para imagem específica
-function irParaImagem(index) {
-    pararTrocaAutomatica();
-    imagemAtual = index;
-    atualizarPosicaoCarrossel();
-    iniciarTrocaAutomatica();
-}
+function irParaImagem(i) { pararTrocaAutomatica(); imagemAtual = i; atualizarPosicaoCarrossel(); iniciarTrocaAutomatica(); }
+function iniciarTrocaAutomatica() { pararTrocaAutomatica(); intervaloAutomatico = setInterval(() => mudarImagem(1), 4000); }
+function pararTrocaAutomatica() { if (intervaloAutomatico) clearInterval(intervaloAutomatico); }
 
-// Troca automática
-function iniciarTrocaAutomatica() {
-    pararTrocaAutomatica();
-    intervaloAutomatico = setInterval(() => {
-        mudarImagem(1);
-    }, 4000);
-}
-
-function pararTrocaAutomatica() {
-    if (intervaloAutomatico) {
-        clearInterval(intervaloAutomatico);
-    }
-}
-
-// Configurar touch/arraste
 function configurarTouch() {
-    const carrossel = document.querySelector('.carrossel-container');
-    if (!carrossel) return;
-    
-    // Remove listeners antigos para evitar duplicação
-    const novoCarrossel = carrossel.cloneNode(true);
-    carrossel.parentNode.replaceChild(novoCarrossel, carrossel);
-    
-    novoCarrossel.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        pararTrocaAutomatica();
-    }, { passive: true });
-    
-    novoCarrossel.addEventListener('touchend', (e) => {
+    const c = document.querySelector('.carrossel-container');
+    if (!c) return;
+    c.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; pararTrocaAutomatica(); }, { passive: true });
+    c.addEventListener('touchend', e => {
         touchEndX = e.changedTouches[0].clientX;
-        const diferenca = touchStartX - touchEndX;
-        
-        if (Math.abs(diferenca) > 50) {
-            if (diferenca > 0) {
-                mudarImagem(1);
-            } else {
-                mudarImagem(-1);
-            }
+        if (Math.abs(touchStartX - touchEndX) > 50) {
+            touchStartX > touchEndX ? mudarImagem(1) : mudarImagem(-1);
         }
         iniciarTrocaAutomatica();
     });
-    
-    // Mouse drag para desktop
-    let mouseDown = false;
-    let mouseStartX = 0;
-    
-    novoCarrossel.addEventListener('mousedown', (e) => {
-        mouseDown = true;
-        mouseStartX = e.clientX;
-        pararTrocaAutomatica();
-    });
-    
-    novoCarrossel.addEventListener('mouseup', (e) => {
-        if (mouseDown) {
-            const diferenca = mouseStartX - e.clientX;
-            if (Math.abs(diferenca) > 50) {
-                if (diferenca > 0) {
-                    mudarImagem(1);
-                } else {
-                    mudarImagem(-1);
-                }
-            }
-            mouseDown = false;
-            iniciarTrocaAutomatica();
-        }
-    });
-    
-    novoCarrossel.addEventListener('mouseleave', () => {
-        if (mouseDown) {
-            mouseDown = false;
-            iniciarTrocaAutomatica();
-        }
-    });
 }
 
-// Selecionar tamanho
+// ========== SELEÇÕES ==========
 function selecionarTamanho(event, produto) {
-    document.querySelectorAll('.tamanho-btn').forEach(btn => {
-        btn.classList.remove('selecionado');
-    });
-    
+    document.querySelectorAll('.tamanho-btn').forEach(b => b.classList.remove('selecionado'));
     event.target.classList.add('selecionado');
-    
-    const tamanhoSelecionado = event.target.textContent;
-    atualizarWhatsAppLink(produto, tamanhoSelecionado);
+    tamanhoSelecionado = event.target.textContent;
+    atualizarWhatsApp(produto);
 }
 
-// Configurar link do WhatsApp
-function configurarWhatsAppLink(produto) {
-    const mensagem = `Olá! Tenho interesse no produto: *${produto.nome}* - ${produto.preco}`;
-    const link = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
-    document.getElementById('whatsapp-link').href = link;
+function selecionarEntrega(tipo, botao) {
+    tipoEntrega = tipo;
+    document.querySelectorAll('.entrega-btn').forEach(b => b.classList.remove('selecionado'));
+    botao.classList.add('selecionado');
+    document.getElementById('entrega-info').innerHTML = tipo === 'entrega' ? '🚚 Enviamos para todo Brasil • Frete calculado no WhatsApp' : '📍 Retirada na loja • Endereço enviado no WhatsApp';
+    const nome = document.getElementById('modal-titulo').textContent;
+    const preco = document.getElementById('modal-preco').textContent;
+    atualizarWhatsApp({ nome, preco });
 }
 
-// Atualizar link do WhatsApp com tamanho
-function atualizarWhatsAppLink(produto, tamanho) {
-    const mensagem = `Olá! Tenho interesse no produto: *${produto.nome}* no tamanho *${tamanho}* - ${produto.preco}`;
-    const link = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
-    document.getElementById('whatsapp-link').href = link;
+// ========== WHATSAPP ==========
+function atualizarWhatsApp(produto) {
+    let msg = `Olá! Tenho interesse no produto: *${produto.nome}*`;
+    if (tamanhoSelecionado) msg += ` no tamanho *${tamanhoSelecionado}*`;
+    msg += ` - ${produto.preco}`;
+    msg += `\nForma de recebimento: *${tipoEntrega === 'entrega' ? '🚚 Entrega' : '📍 Retirada na loja'}*`;
+    document.getElementById('whatsapp-link').href = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
 
-// Fechar modal
+// ========== FECHAR ==========
 function fecharModal() {
     document.getElementById('modal').style.display = 'none';
     document.body.style.overflow = 'auto';
     pararTrocaAutomatica();
 }
-
-// Fechar ao clicar fora
-window.onclick = function(event) {
-    const modal = document.getElementById('modal');
-    if (event.target == modal) {
-        fecharModal();
-    }
-}
-
-// Fechar com ESC
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        fecharModal();
-    }
-    // Forçar visibilidade dos indicadores no celular
-document.addEventListener('DOMContentLoaded', function() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .carrossel-indicadores {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 9999 !important;
-            pointer-events: auto !important;
-            position: absolute !important;
-            bottom: 15px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            background: rgba(0,0,0,0.5) !important;
-            padding: 5px 10px !important;
-            border-radius: 20px !important;
-        }
-        .indicador {
-            display: inline-block !important;
-            width: 12px !important;
-            height: 12px !important;
-            min-width: 12px !important;
-            min-height: 12px !important;
-            border-radius: 50% !important;
-            background: rgba(255,255,255,0.5) !important;
-            border: 2px solid rgba(255,255,255,0.8) !important;
-            cursor: pointer !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            -webkit-appearance: none !important;
-        }
-        .indicador.ativo {
-            background: #ffffff !important;
-            border-color: #ffffff !important;
-            transform: scale(1.4) !important;
-            box-shadow: 0 0 10px rgba(255,255,255,0.8) !important;
-        }
-    `;
-    document.head.appendChild(style);
-});
-});
+window.onclick = function(e) { if (e.target == document.getElementById('modal')) fecharModal(); }
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fecharModal(); });
