@@ -8,7 +8,8 @@ const produtos = {
         imagens: [
             "imagens/camisa-amarela.jpg",
             "imagens/camisa-amarela-2.jpg",
-            "imagens/camisa-amarela-3.jpg"
+            "imagens/camisa-amarela-3.jpg",
+            "imagens/camisa-amarela-4.jpg"
         ],
         tamanhos: ["M"]
     },
@@ -20,9 +21,11 @@ const produtos = {
         imagens: [
             "imagens/camisa-azul.jpg",
             "imagens/camisa-azul-2.jpg",
-            "imagens/camisa-azul-3.jpg"
+            "imagens/camisa-azul-3.jpg",
+            "imagens/camisa-azul-4.jpg",
+            "imagens/camisa-azul-5.jpg"
         ],
-        tamanhos: ["N/D"]
+        tamanhos: ["P", "M", "G"]
     }
 };
 
@@ -38,7 +41,7 @@ let tipoEntrega = 'entrega';
 let tamanhoSelecionado = '';
 const NUMERO_WHATSAPP = "5598981865930";
 
-// ========== CARROSSEL VITRINE ==========
+// ========== CARROSSEL VITRINE (MAIS RÁPIDO) ==========
 function iniciarCarrosselVitrine(produtoId) {
     const produto = produtos[produtoId];
     const card = document.querySelector(`[data-produto="${produtoId}"]`);
@@ -55,8 +58,8 @@ function iniciarCarrosselVitrine(produtoId) {
             if (imagensAtuaisVitrine[produtoId] >= produto.imagens.length) imagensAtuaisVitrine[produtoId] = 0;
             img.src = produto.imagens[imagensAtuaisVitrine[produtoId]];
             img.style.opacity = '1'; img.style.transform = 'scale(1)';
-        }, 500);
-    }, 4000);
+        }, 300);
+    }, 2500);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -88,8 +91,6 @@ function mostrarDetalhes(produtoId) {
     document.querySelectorAll('.entrega-btn').forEach(b => b.classList.remove('selecionado'));
     const btnE = document.querySelector('.entrega-btn');
     if (btnE) btnE.classList.add('selecionado');
-    const info = document.getElementById('entrega-info');
-    if (info) info.innerHTML = '🚚 Enviamos para todo Brasil • Frete calculado no WhatsApp';
     
     carregarCarrossel();
     iniciarTrocaAutomatica();
@@ -142,7 +143,9 @@ function mudarImagem(d) {
 }
 
 function irParaImagem(i) { pararTrocaAutomatica(); imagemAtual = i; atualizarPosicaoCarrossel(); iniciarTrocaAutomatica(); }
-function iniciarTrocaAutomatica() { pararTrocaAutomatica(); intervaloAutomatico = setInterval(() => mudarImagem(1), 4000); }
+
+// Troca automática mais rápida (2.5 segundos)
+function iniciarTrocaAutomatica() { pararTrocaAutomatica(); intervaloAutomatico = setInterval(() => mudarImagem(1), 2500); }
 function pararTrocaAutomatica() { if (intervaloAutomatico) clearInterval(intervaloAutomatico); }
 
 function configurarTouch() {
@@ -170,7 +173,6 @@ function selecionarEntrega(tipo, botao) {
     tipoEntrega = tipo;
     document.querySelectorAll('.entrega-btn').forEach(b => b.classList.remove('selecionado'));
     botao.classList.add('selecionado');
-    document.getElementById('entrega-info').innerHTML = tipo === 'entrega' ? '🚚 Enviamos para todo Brasil • Frete calculado no WhatsApp' : '📍 Retirada na loja • Endereço enviado no WhatsApp';
     const nome = document.getElementById('modal-titulo').textContent;
     const preco = document.getElementById('modal-preco').textContent;
     atualizarWhatsApp({ nome, preco });
