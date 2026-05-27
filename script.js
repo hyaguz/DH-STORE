@@ -22,7 +22,7 @@ const produtos = {
             "imagens/camisa-azul-2.jpg",
             "imagens/camisa-azul-3.jpg"
         ],
-        tamanhos: []
+        tamanhos: ["INDISPONIVEL"]
     }
 };
 
