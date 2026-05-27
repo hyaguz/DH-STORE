@@ -25,7 +25,7 @@ const produtos = {
             "imagens/camisa-azul-4.jpg",
             "imagens/camisa-azul-5.jpg"
         ],
-        tamanhos: ["P", "M", "G"]
+        tamanhos: ["N/D"]
     }
 };
 
