@@ -10,7 +10,7 @@ const produtos = {
             "imagens/camisa-amarela-2.jpg",
             "imagens/camisa-amarela-3.jpg"
         ],
-        tamanhos: ["P", "M", "G", "GG"]
+        tamanhos: ["M"]
     },
     produto2: {
         nome: "Camisa Brasil 2026 - Azul",
@@ -22,7 +22,7 @@ const produtos = {
             "imagens/camisa-azul-2.jpg",
             "imagens/camisa-azul-3.jpg"
         ],
-        tamanhos: ["P", "M", "G"]
+        tamanhos: []
     }
 };
 
